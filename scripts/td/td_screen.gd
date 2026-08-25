@@ -23,6 +23,7 @@ const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 @onready var wave_spawner: TDWaveSpawner = $WaveSpawner
 @onready var core_label: Label = $CoreLabel
 @onready var wave_label: Label = $WaveLabel
+@onready var automation_label: Label = $AutomationLabel
 @onready var tower_buttons: Array[Button] = [$TowerButton1, $TowerButton2, $TowerButton3, $TowerButton4]
 @onready var wall_button: Button = $WallButton
 @onready var tech_button: Button = $TechButton
@@ -90,6 +91,34 @@ func _setup_layer_content() -> void:
 	else:
 		advance_button.visible = true
 		advance_button.text = "Passer à %s (%d)" % [next_layer.display_name, int(next_layer.unlock_cost)]
+
+	_refresh_automation_label()
+
+## Bandeau des couches automatisées : docs/design.md, section 07. Seules
+## les deux plus récentes gardent une ligne nommée ; le reste se regroupe
+## sous un débit cumulé, pour que le bandeau garde une taille fixe quel
+## que soit le nombre de couches laissées derrière.
+func _refresh_automation_label() -> void:
+	var automated: Array[LayerDefinition] = LayerManager.get_automated_layers()
+	if automated.is_empty():
+		automation_label.text = "Automatisation : aucune couche laissée derrière pour l'instant."
+		return
+
+	const RECENT_COUNT := 2
+	var recent_count: int = mini(RECENT_COUNT, automated.size())
+	var older: Array[LayerDefinition] = automated.slice(0, automated.size() - recent_count)
+	var recent: Array[LayerDefinition] = automated.slice(automated.size() - recent_count, automated.size())
+
+	var parts: Array[String] = []
+	if older.size() > 0:
+		var older_rate: float = 0.0
+		for layer in older:
+			older_rate += layer.base_rate
+		parts.append("Ères précédentes +%.1f/s" % older_rate)
+	for layer in recent:
+		parts.append("%s +%.1f/s" % [layer.display_name, layer.base_rate])
+
+	automation_label.text = "Automatisation : " + " · ".join(parts)
 
 func _select_tower(tower_definition: TowerDefinition) -> void:
 	_selected_tower = tower_definition
