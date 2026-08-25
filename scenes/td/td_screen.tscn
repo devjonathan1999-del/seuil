@@ -17,9 +17,25 @@ script = ExtResource("2")
 [node name="WaveSpawner" type="Node" parent="."]
 script = ExtResource("3")
 
-[node name="CoreLabel" type="Label" parent="."]
+[node name="ChasseurButton" type="Button" parent="."]
+toggle_mode = true
 offset_left = 20.0
 offset_top = 1460.0
-offset_right = 500.0
+offset_right = 260.0
 offset_bottom = 1520.0
+text = "Chasseur"
+
+[node name="FeuLanceButton" type="Button" parent="."]
+toggle_mode = true
+offset_left = 280.0
+offset_top = 1460.0
+offset_right = 520.0
+offset_bottom = 1520.0
+text = "Feu lancé"
+
+[node name="CoreLabel" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 1540.0
+offset_right = 500.0
+offset_bottom = 1600.0
 text = "Cœur : 10"
