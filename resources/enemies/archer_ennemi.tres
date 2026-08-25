@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"archer_ennemi"
+display_name = "Archer ennemi"
+hp = 14.0
+speed = 70.0
+reward = 9.0
+radius = 22.0
+color = Color(0.55, 0.15, 0.15, 1)

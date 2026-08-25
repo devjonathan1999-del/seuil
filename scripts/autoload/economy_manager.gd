@@ -13,8 +13,13 @@ signal prestige_currency_changed(amount: int)
 var layer_currency: float = 20.0
 var prestige_currency: int = 0
 
+## Total produit dans la couche en cours, jamais réduit par les dépenses.
+## Sert de "Produit(N)" au pont inter-couches (docs/design.md, section 04).
+var total_layer_currency_earned: float = 20.0
+
 func add_layer_currency(amount: float) -> void:
 	layer_currency += amount
+	total_layer_currency_earned += amount
 	layer_currency_changed.emit(layer_currency)
 
 func spend_layer_currency(amount: float) -> bool:
@@ -30,4 +35,11 @@ func add_prestige_currency(amount: int) -> void:
 
 func reset_layer_currency() -> void:
 	layer_currency = 0.0
+	layer_currency_changed.emit(layer_currency)
+
+## Appelé au passage à la couche suivante : reçoit le pont inter-couches
+## comme trésor de départ et repart de zéro pour le suivi de production.
+func begin_new_layer(starting_currency: float) -> void:
+	layer_currency = starting_currency
+	total_layer_currency_earned = 0.0
 	layer_currency_changed.emit(layer_currency)

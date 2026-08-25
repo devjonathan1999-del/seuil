@@ -1,14 +1,8 @@
 extends Panel
 
-## Liste, pour chaque tourelle, ses paliers à débloquer puis à choisir (A/B).
-## Construit dynamiquement : la structure vient de TechTreeManager.TIERS.
-
-const TOWER_DEFS: Array[TowerDefinition] = [
-	preload("res://resources/towers/chasseur.tres"),
-	preload("res://resources/towers/feu_lance.tres"),
-	preload("res://resources/towers/piege_fosse.tres"),
-	preload("res://resources/towers/chaman.tres"),
-]
+## Liste, pour chaque tourelle de la couche active, ses paliers à débloquer
+## puis à choisir (A/B). Construit dynamiquement : la structure vient de
+## TechTreeManager.TIERS, la liste de tourelles de LayerContent.
 
 const FIELD_LABELS: Dictionary = {
 	"damage": "dégâts",
@@ -28,13 +22,15 @@ func _ready() -> void:
 	close_button.pressed.connect(func() -> void: visible = false)
 	TechTreeManager.tree_changed.connect(_rebuild)
 	EconomyManager.layer_currency_changed.connect(func(_amount: float) -> void: _rebuild())
+	LayerManager.layer_changed.connect(func(_layer: LayerDefinition) -> void: _rebuild())
 	_rebuild()
 
 func _rebuild() -> void:
 	for child in content.get_children():
 		child.queue_free()
 
-	for tower_definition: TowerDefinition in TOWER_DEFS:
+	var layer: LayerDefinition = LayerManager.get_current_layer()
+	for tower_definition: TowerDefinition in LayerContent.get_towers(layer.id):
 		var header := Label.new()
 		header.text = tower_definition.display_name
 		header.add_theme_font_size_override("font_size", 24)

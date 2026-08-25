@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"eclaireur_monte"
+display_name = "Éclaireur monté"
+hp = 10.0
+speed = 190.0
+reward = 6.0
+radius = 17.0
+color = Color(0.7, 0.6, 0.3, 1)

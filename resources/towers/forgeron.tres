@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="TowerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"forgeron"
+display_name = "Forgeron"
+damage = 0.0
+fire_rate = 1.0
+range_cells = 2.2
+splash_radius_cells = 0.0
+slow_multiplier = 1.0
+slow_duration = 0.0
+buff_damage_multiplier = 1.35
+buff_duration = 1.6
+cost = 25.0
+color = Color(0.5, 0.7, 0.35, 1)

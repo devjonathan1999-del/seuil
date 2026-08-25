@@ -7,6 +7,7 @@ signal layer_changed(layer: LayerDefinition)
 
 const LAYER_PATHS: Array[String] = [
 	"res://resources/layers/tribu.tres",
+	"res://resources/layers/village.tres",
 ]
 
 var layers: Array[LayerDefinition] = []
@@ -18,6 +19,10 @@ func _ready() -> void:
 
 func get_current_layer() -> LayerDefinition:
 	return layers[current_index] if current_index < layers.size() else null
+
+func get_next_layer() -> LayerDefinition:
+	var next_index: int = current_index + 1
+	return layers[next_index] if next_index < layers.size() else null
 
 ## Les couches déjà dépassées, qui tournent en automatisation. Section 07 du doc :
 ## l'UI ne montre en détail que les plus récentes, le reste se regroupe.
@@ -32,3 +37,12 @@ func advance_layer() -> void:
 func reset_to_first_layer() -> void:
 	current_index = 0
 	layer_changed.emit(get_current_layer())
+
+## Production passive en direct, pendant que le joueur joue la couche active.
+## Le taux réduit hors-ligne (SaveManager) est un calcul séparé.
+func _process(delta: float) -> void:
+	var total_rate := 0.0
+	for layer in get_automated_layers():
+		total_rate += layer.base_rate
+	if total_rate > 0.0:
+		EconomyManager.add_layer_currency(total_rate * delta)
