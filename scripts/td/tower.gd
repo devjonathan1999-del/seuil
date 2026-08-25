@@ -115,8 +115,30 @@ func _can_see(target: TDEnemy) -> bool:
 	var target_cell: Vector2i = _grid.local_to_grid(_grid.to_local(target.global_position))
 	return _grid.has_line_of_sight(_own_cell, target_cell)
 
+## Un symbole différent par rôle (voir docs/design.md, section 03) rend les
+## tourelles reconnaissables au premier coup d'œil, sans dépendre que de la
+## couleur : plus pour le Support, losange pour le Contrôle, anneau pour
+## l'AoE, triangle pour le DPS mono-cible.
 func _draw() -> void:
 	if definition == null:
 		return
-	draw_arc(Vector2.ZERO, _range_pixels, 0.0, TAU, 48, Color(definition.color.r, definition.color.g, definition.color.b, 0.2), 2.0)
-	draw_circle(Vector2.ZERO, 28.0, definition.color)
+
+	var c: Color = definition.color
+	draw_arc(Vector2.ZERO, _range_pixels, 0.0, TAU, 64, Color(c.r, c.g, c.b, 0.16), 1.5)
+
+	draw_circle(Vector2.ZERO, 32.0, Color(0.06, 0.06, 0.07, 0.9))
+	draw_circle(Vector2.ZERO, 27.0, c)
+	draw_arc(Vector2.ZERO, 27.0, 0.0, TAU, 40, Color(0.0, 0.0, 0.0, 0.35), 2.0)
+
+	var highlight := Color(minf(c.r * 1.5, 1.0), minf(c.g * 1.5, 1.0), minf(c.b * 1.5, 1.0))
+	if definition.buff_damage_multiplier > 1.0:
+		draw_rect(Rect2(-4.0, -15.0, 8.0, 30.0), highlight, true)
+		draw_rect(Rect2(-15.0, -4.0, 30.0, 8.0), highlight, true)
+	elif definition.slow_multiplier < 1.0:
+		var diamond := PackedVector2Array([Vector2(0, -15), Vector2(15, 0), Vector2(0, 15), Vector2(-15, 0)])
+		draw_colored_polygon(diamond, highlight)
+	elif _splash_radius_pixels > 0.0:
+		draw_arc(Vector2.ZERO, 13.0, 0.0, TAU, 24, highlight, 5.0)
+	else:
+		var triangle := PackedVector2Array([Vector2(0, -14), Vector2(12, 9), Vector2(-12, 9)])
+		draw_colored_polygon(triangle, highlight)

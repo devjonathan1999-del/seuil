@@ -23,7 +23,6 @@ offset_left = 15.0
 offset_top = 1450.0
 offset_right = 945.0
 offset_bottom = 1490.0
-theme_override_font_sizes/font_size = 20
 text = "Automatisation : aucune couche laissée derrière pour l'instant."
 
 [node name="TowerButton1" type="Button" parent="."]

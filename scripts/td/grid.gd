@@ -168,17 +168,20 @@ func _draw() -> void:
 	for row in rows:
 		for col in columns:
 			var cell := Vector2i(col, row)
+			var checker: bool = (col + row) % 2 == 0
 			var fill_color: Color
 			if has_terrain and is_blocked(cell):
-				fill_color = Color(0.3, 0.16, 0.1)
+				fill_color = Color(0.3, 0.16, 0.11) if checker else Color(0.22, 0.11, 0.08)
 			elif is_on_path(cell):
-				fill_color = Color(0.32, 0.24, 0.12)
+				fill_color = Color(0.42, 0.31, 0.17) if checker else Color(0.31, 0.22, 0.11)
 			else:
-				fill_color = Color(0.16, 0.18, 0.14)
+				fill_color = Color(0.19, 0.23, 0.19) if checker else Color(0.11, 0.14, 0.11)
 			var rect := Rect2(col * cell_size, row * cell_size, cell_size, cell_size)
 			draw_rect(rect, fill_color, true)
-			draw_rect(rect, Color(0.05, 0.05, 0.05), false, 2.0)
+			draw_rect(rect.grow(-2.0), Color(1.0, 1.0, 1.0, 0.035), false, 1.5)
+			draw_rect(rect, Color(0.03, 0.035, 0.04, 0.7), false, 2.0)
 
 	for cell in _slow_zones:
 		var zone_rect := Rect2(cell.x * cell_size, cell.y * cell_size, cell_size, cell_size)
-		draw_rect(zone_rect, Color(0.35, 0.7, 0.9, 0.35), true)
+		draw_rect(zone_rect, Color(0.35, 0.7, 0.9, 0.3), true)
+		draw_rect(zone_rect.grow(-4.0), Color(0.6, 0.88, 1.0, 0.7), false, 2.5)
