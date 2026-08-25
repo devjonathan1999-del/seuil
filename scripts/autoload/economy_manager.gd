@@ -6,7 +6,11 @@ extends Node
 signal layer_currency_changed(amount: float)
 signal prestige_currency_changed(amount: int)
 
-var layer_currency: float = 0.0
+## Trésor de départ de la toute première couche : sans un premier chantier
+## à financer par les combats, la partie serait bloquée avant même de
+## commencer. Le pont inter-couches (docs/design.md, section 04) prend le
+## relais dès la deuxième couche.
+var layer_currency: float = 20.0
 var prestige_currency: int = 0
 
 func add_layer_currency(amount: float) -> void:

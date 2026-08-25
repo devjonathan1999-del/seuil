@@ -1,7 +1,9 @@
 extends Node2D
 
 ## Assemble la grille, les tourelles, les ennemis et les vagues.
-## Choisir un type de tourelle puis toucher une case vide et hors chemin l'y pose.
+## Choisir un type de tourelle puis toucher une case vide et hors chemin l'y
+## pose, si la monnaie de couche suffit. Les choix de l'arbre de tech
+## (TechTreeManager) sont appliqués à chaque pose, pas rétroactivement.
 
 const CHASSEUR_TOWER: TowerDefinition = preload("res://resources/towers/chasseur.tres")
 const FEU_LANCE_TOWER: TowerDefinition = preload("res://resources/towers/feu_lance.tres")
@@ -24,6 +26,8 @@ const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 @onready var feu_lance_button: Button = $FeuLanceButton
 @onready var piege_fosse_button: Button = $PiegeFosseButton
 @onready var chaman_button: Button = $ChamanButton
+@onready var tech_button: Button = $TechButton
+@onready var tech_tree_panel: Control = $TechTreePanel
 
 var _occupied_cells: Dictionary = {}
 var _selected_tower: TowerDefinition = CHASSEUR_TOWER
@@ -43,8 +47,14 @@ func _ready() -> void:
 		CHAMAN_TOWER: chaman_button,
 	}
 	for tower_definition: TowerDefinition in _tower_buttons:
-		_tower_buttons[tower_definition].pressed.connect(_select_tower.bind(tower_definition))
+		var button: Button = _tower_buttons[tower_definition]
+		button.text = "%s (%d)" % [tower_definition.display_name, int(tower_definition.cost)]
+		button.pressed.connect(_select_tower.bind(tower_definition))
 	_select_tower(CHASSEUR_TOWER)
+	EconomyManager.layer_currency_changed.connect(_refresh_affordability)
+	_refresh_affordability(EconomyManager.layer_currency)
+
+	tech_button.pressed.connect(func() -> void: tech_tree_panel.visible = not tech_tree_panel.visible)
 
 	_refresh_core_label()
 
@@ -53,19 +63,26 @@ func _select_tower(tower_definition: TowerDefinition) -> void:
 	for candidate: TowerDefinition in _tower_buttons:
 		_tower_buttons[candidate].button_pressed = candidate == tower_definition
 
+func _refresh_affordability(_amount: float) -> void:
+	for tower_definition: TowerDefinition in _tower_buttons:
+		_tower_buttons[tower_definition].disabled = EconomyManager.layer_currency < tower_definition.cost
+
 func _on_cell_clicked(cell: Vector2i) -> void:
 	if grid.is_on_path(cell) or _occupied_cells.has(cell):
 		return
+	if not EconomyManager.spend_layer_currency(_selected_tower.cost):
+		return
 
+	var effective_definition: TowerDefinition = TechTreeManager.apply_to_definition(_selected_tower)
 	var tower: TDTower = TOWER_SCENE.instantiate()
 	towers_root.add_child(tower)
 	tower.global_position = grid.to_global(grid.grid_to_local(cell))
 	tower.setup(
-		_selected_tower,
+		effective_definition,
 		enemies_root,
 		towers_root,
-		_selected_tower.range_cells * grid.cell_size,
-		_selected_tower.splash_radius_cells * grid.cell_size
+		effective_definition.range_cells * grid.cell_size,
+		effective_definition.splash_radius_cells * grid.cell_size
 	)
 	_occupied_cells[cell] = tower
 
