@@ -1,0 +1,29 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes to [section] group in the ProjectSettings
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Seuil"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
+
+[autoload]
+
+LayerManager="*res://scripts/autoload/layer_manager.gd"
+EconomyManager="*res://scripts/autoload/economy_manager.gd"
+PrestigeManager="*res://scripts/autoload/prestige_manager.gd"
+SaveManager="*res://scripts/autoload/save_manager.gd"
+
+[display]
+
+window/size/viewport_width=1080
+window/size/viewport_height=1920
+window/handheld/orientation=1
+window/stretch/mode="canvas_items"

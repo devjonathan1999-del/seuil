@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="LayerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/layer_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"tribu"
+display_name = "Tribu"
+defends = "Le feu"
+base_rate = 1.0
+unlock_cost = 0.0
+twist_description = "Couche d'introduction, aucun twist."
