@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"titan_orbital"
+display_name = "Titan orbital"
+hp = 1000.0
+speed = 32.0
+reward = 220.0
+radius = 62.0
+color = Color(0.15, 0.1, 0.2, 1)
+is_aerial = true

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="LayerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/layer_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"planete"
+display_name = "Planète"
+defends = "Le globe, contre une invasion orbitale"
+base_rate = 20.0
+unlock_cost = 1800.0
+twist_description = "Verticalité : les ennemis aériens (Intercepteur, Croiseur orbital, le boss Titan orbital) survolent les murs et ignorent le chemin au sol. Seules Tourelle laser et Champ de gravité peuvent les toucher. Terrain, tir indirect et boss restent actifs."
+has_terrain = true
+requires_line_of_sight = true

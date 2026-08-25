@@ -31,6 +31,12 @@ const TOWER_POOLS: Dictionary = {
 		"res://resources/towers/mines_emp.tres",
 		"res://resources/towers/ingenieur.tres",
 	],
+	&"planete": [
+		"res://resources/towers/tourelle_laser.tres",
+		"res://resources/towers/frappe_orbitale.tres",
+		"res://resources/towers/champ_gravite.tres",
+		"res://resources/towers/ia_medicale.tres",
+	],
 }
 
 const ENEMY_POOLS: Dictionary = {
@@ -57,6 +63,12 @@ const ENEMY_POOLS: Dictionary = {
 		"res://resources/enemies/moto_jet.tres",
 		"res://resources/enemies/obusier.tres",
 	],
+	&"planete": [
+		"res://resources/enemies/essaim_insectoides.tres",
+		"res://resources/enemies/mecha.tres",
+		"res://resources/enemies/intercepteur.tres",
+		"res://resources/enemies/croiseur_orbital.tres",
+	],
 }
 
 ## Vagues nommées / boss (twist Village → Royaume). "interval" = une vague
@@ -69,6 +81,10 @@ const BOSS_POOLS: Dictionary = {
 	&"nation": {
 		"interval": 5,
 		"enemy": "res://resources/enemies/forteresse_mobile.tres",
+	},
+	&"planete": {
+		"interval": 5,
+		"enemy": "res://resources/enemies/titan_orbital.tres",
 	},
 }
 

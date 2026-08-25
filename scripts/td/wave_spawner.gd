@@ -65,5 +65,6 @@ func _run_waves() -> void:
 func _spawn_enemy(stat_scale: float, enemy_definition: EnemyDefinition) -> void:
 	var enemy: TDEnemy = _enemy_scene.instantiate()
 	_enemies_root.add_child(enemy)
-	enemy.setup(enemy_definition, _grid.get_path_world_points(), stat_scale)
+	var points: Array[Vector2] = _grid.get_direct_world_points() if enemy_definition.is_aerial else _grid.get_path_world_points()
+	enemy.setup(enemy_definition, points, stat_scale)
 	enemy_spawned.emit(enemy)

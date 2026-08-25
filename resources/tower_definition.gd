@@ -17,3 +17,4 @@ extends Resource
 @export var cost: float = 0.0
 @export var color: Color = Color(0.75, 0.55, 0.2)
 @export var ignores_line_of_sight: bool = false ## tir indirect (Nation), voir section 03
+@export var can_target_aerial: bool = false ## verticalité (Planète), voir section 03

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="TowerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"champ_gravite"
+display_name = "Champ de gravité"
+damage = 0.0
+fire_rate = 0.4
+range_cells = 2.6
+splash_radius_cells = 0.0
+slow_multiplier = 0.3
+slow_duration = 2.5
+buff_damage_multiplier = 1.0
+buff_duration = 0.0
+cost = 95.0
+color = Color(0.3, 0.2, 0.5, 1)
+ignores_line_of_sight = false
+can_target_aerial = true

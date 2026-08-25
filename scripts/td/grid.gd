@@ -52,6 +52,14 @@ func get_path_world_points() -> Array[Vector2]:
 		points.append(to_global(grid_to_local(cell)))
 	return points
 
+## Trajectoire en ligne droite du départ à l'arrivée, murs ignorés.
+## Verticalité (Planète) : les ennemis aériens survolent le labyrinthe.
+func get_direct_world_points() -> Array[Vector2]:
+	return [
+		to_global(grid_to_local(get_start_cell())),
+		to_global(grid_to_local(get_end_cell())),
+	]
+
 ## Active ou désactive le terrain dynamique pour la couche affichée.
 func set_terrain_enabled(enabled: bool) -> void:
 	has_terrain = enabled

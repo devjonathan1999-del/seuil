@@ -10,6 +10,7 @@ const LAYER_PATHS: Array[String] = [
 	"res://resources/layers/village.tres",
 	"res://resources/layers/royaume.tres",
 	"res://resources/layers/nation.tres",
+	"res://resources/layers/planete.tres",
 ]
 
 var layers: Array[LayerDefinition] = []

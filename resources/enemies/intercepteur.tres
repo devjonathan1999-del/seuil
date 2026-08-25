@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"intercepteur"
+display_name = "Intercepteur"
+hp = 35.0
+speed = 220.0
+reward = 19.0
+radius = 20.0
+color = Color(0.3, 0.55, 0.75, 1)
+is_aerial = true

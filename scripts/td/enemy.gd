@@ -70,6 +70,8 @@ func _draw() -> void:
 	var radius: float = definition.radius if definition else 24.0
 	var color: Color = definition.color if definition else Color(0.7, 0.2, 0.2)
 	draw_circle(Vector2.ZERO, radius, color)
+	if definition and definition.is_aerial:
+		draw_arc(Vector2.ZERO, radius + 6.0, 0.0, TAU, 32, Color(0.7, 0.9, 1.0, 0.8), 3.0)
 
 	var ratio: float = clamp(hp / max_hp, 0.0, 1.0)
 	var bar_width: float = radius * 2.0

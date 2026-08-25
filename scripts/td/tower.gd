@@ -76,7 +76,7 @@ func _on_fire_timeout() -> void:
 
 func _pulse_slow_enemies() -> void:
 	for child in _enemies_root.get_children():
-		if child is TDEnemy and global_position.distance_to(child.global_position) <= _range_pixels:
+		if child is TDEnemy and global_position.distance_to(child.global_position) <= _range_pixels and _can_target(child):
 			child.apply_slow(definition.slow_multiplier, definition.slow_duration)
 
 func _pulse_buff_towers() -> void:
@@ -96,10 +96,18 @@ func _find_target() -> TDEnemy:
 	for child in _enemies_root.get_children():
 		if child is TDEnemy:
 			var dist: float = global_position.distance_to(child.global_position)
-			if dist <= _range_pixels and dist < closest_dist and _can_see(child):
+			if dist <= _range_pixels and dist < closest_dist and _can_target(child):
 				closest = child
 				closest_dist = dist
 	return closest
+
+## Regroupe les deux conditions de ciblage : ligne de vue (Nation) et
+## sol/aérien (Planète). Une tourelle qui ne peut pas voir ou pas
+## atteindre l'altitude d'une cible l'ignore complètement.
+func _can_target(target: TDEnemy) -> bool:
+	if target.definition and target.definition.is_aerial and not definition.can_target_aerial:
+		return false
+	return _can_see(target)
 
 func _can_see(target: TDEnemy) -> bool:
 	if not _requires_los or definition.ignores_line_of_sight or _grid == null:
