@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="TowerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"nanoessaim"
+display_name = "Nanoessaim"
+damage = 0.0
+fire_rate = 1.0
+range_cells = 3.0
+splash_radius_cells = 0.0
+slow_multiplier = 1.0
+slow_duration = 0.0
+buff_damage_multiplier = 1.55
+buff_duration = 2.4
+cost = 220.0
+color = Color(0.4, 0.65, 0.55, 1)
+ignores_line_of_sight = false
+can_target_aerial = false

@@ -12,3 +12,4 @@ extends Resource
 @export var twist_description: String = ""
 @export var has_terrain: bool = false ## murs/portes : voir section 03, twist Tribu → Village
 @export var requires_line_of_sight: bool = false ## tir indirect : twist Royaume → Nation
+@export var has_temporal_zones: bool = false ## ralentissement de zone : twist Planète → Galactique

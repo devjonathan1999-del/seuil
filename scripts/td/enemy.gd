@@ -14,16 +14,20 @@ var hp: float
 var _path_points: Array[Vector2] = []
 var _target_index: int = 1
 var _slow_timer: Timer
+var _grid: TDGrid
 
 ## stat_scale vient du scaling par vague (docs/design.md, section 05) :
 ## HP et récompense grossissent avec la vague, la vitesse ne bouge pas.
-func setup(enemy_definition: EnemyDefinition, path_points: Array[Vector2], stat_scale: float = 1.0) -> void:
+## grid n'est nécessaire que pour les zones de ralentissement (Galactique) ;
+## une couche qui n'en a pas peut laisser ce paramètre à null.
+func setup(enemy_definition: EnemyDefinition, path_points: Array[Vector2], stat_scale: float = 1.0, grid: TDGrid = null) -> void:
 	definition = enemy_definition
 	max_hp = enemy_definition.hp * stat_scale
 	speed = enemy_definition.speed
 	reward = enemy_definition.reward * stat_scale
 	hp = max_hp
 	_path_points = path_points
+	_grid = grid
 	if _path_points.size() > 0:
 		global_position = _path_points[0]
 	add_to_group("enemies")
@@ -32,9 +36,10 @@ func _process(delta: float) -> void:
 	if _target_index >= _path_points.size():
 		return
 
+	var zone_multiplier: float = _grid.get_zone_multiplier_at(global_position) if _grid else 1.0
 	var target_point: Vector2 = _path_points[_target_index]
 	var to_target: Vector2 = target_point - global_position
-	var step: float = speed * speed_multiplier * delta
+	var step: float = speed * speed_multiplier * zone_multiplier * delta
 
 	if to_target.length() <= step:
 		global_position = target_point

@@ -11,6 +11,7 @@ const LAYER_PATHS: Array[String] = [
 	"res://resources/layers/royaume.tres",
 	"res://resources/layers/nation.tres",
 	"res://resources/layers/planete.tres",
+	"res://resources/layers/galactique.tres",
 ]
 
 var layers: Array[LayerDefinition] = []

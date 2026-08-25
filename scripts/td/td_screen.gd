@@ -10,9 +10,17 @@ extends Node2D
 ## Sur une couche à terrain (Village, docs/design.md section 03), le mode
 ## Mur remplace la pose de tourelle : tourelles et murs bloquent tous deux
 ## leur case pour le chemin recalculé par la grille (TDGrid.can_block).
+## Sur une couche à zones temporelles (Galactique), le mode Zone pose un
+## ralentissement persistant qui ne touche jamais le tracé du chemin.
+##
+## Une fois la dernière couche configurée atteinte (LayerManager.get_next_layer
+## == null), le bouton de progression devient le déclencheur du prestige
+## galactique (section 09) au lieu de rester caché.
 
 const BRIDGE_K: float = 2.0 ## Départ(N+1) = k × √Produit(N), section 04
 const WALL_COST: float = 8.0
+const ZONE_COST: float = 150.0
+const ZONE_SLOW_MULTIPLIER: float = 0.5
 
 const TOWER_SCENE: PackedScene = preload("res://scenes/td/tower.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
@@ -26,6 +34,7 @@ const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 @onready var automation_label: Label = $AutomationLabel
 @onready var tower_buttons: Array[Button] = [$TowerButton1, $TowerButton2, $TowerButton3, $TowerButton4]
 @onready var wall_button: Button = $WallButton
+@onready var zone_button: Button = $ZoneButton
 @onready var tech_button: Button = $TechButton
 @onready var tech_tree_panel: Control = $TechTreePanel
 @onready var advance_button: Button = $AdvanceButton
@@ -33,6 +42,7 @@ const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 var _occupied_cells: Dictionary = {}
 var _selected_tower: TowerDefinition
 var _wall_mode: bool = false
+var _zone_mode: bool = false
 var core_hp: int = 10
 
 func _ready() -> void:
@@ -40,6 +50,7 @@ func _ready() -> void:
 	tech_button.pressed.connect(func() -> void: tech_tree_panel.visible = not tech_tree_panel.visible)
 	advance_button.pressed.connect(_on_advance_pressed)
 	wall_button.pressed.connect(_select_wall_mode)
+	zone_button.pressed.connect(_select_zone_mode)
 	EconomyManager.layer_currency_changed.connect(_refresh_affordability)
 
 	for i in tower_buttons.size():
@@ -64,6 +75,8 @@ func _setup_layer_content() -> void:
 	grid.set_terrain_enabled(layer.has_terrain)
 	wall_button.visible = layer.has_terrain
 	wall_button.text = "Mur (%d)" % int(WALL_COST)
+	zone_button.visible = layer.has_temporal_zones
+	zone_button.text = "Zone temporelle (%d)" % int(ZONE_COST)
 
 	for i in tower_buttons.size():
 		var button: Button = tower_buttons[i]
@@ -74,7 +87,6 @@ func _setup_layer_content() -> void:
 			button.visible = false
 	if towers.size() > 0:
 		_select_tower(towers[0])
-	_refresh_affordability(EconomyManager.layer_currency)
 
 	wave_spawner.stop()
 	wave_spawner.queue_free()
@@ -92,13 +104,8 @@ func _setup_layer_content() -> void:
 		LayerContent.get_boss_interval(layer.id)
 	)
 
-	var next_layer: LayerDefinition = LayerManager.get_next_layer()
-	if next_layer == null:
-		advance_button.visible = false
-	else:
-		advance_button.visible = true
-		advance_button.text = "Passer à %s (%d)" % [next_layer.display_name, int(next_layer.unlock_cost)]
-
+	_refresh_advance_button()
+	_refresh_affordability(EconomyManager.layer_currency)
 	_refresh_automation_label()
 
 ## Bandeau des couches automatisées : docs/design.md, section 07. Seules
@@ -130,7 +137,9 @@ func _refresh_automation_label() -> void:
 func _select_tower(tower_definition: TowerDefinition) -> void:
 	_selected_tower = tower_definition
 	_wall_mode = false
+	_zone_mode = false
 	wall_button.button_pressed = false
+	zone_button.button_pressed = false
 	var layer: LayerDefinition = LayerManager.get_current_layer()
 	var towers: Array[TowerDefinition] = LayerContent.get_towers(layer.id)
 	for i in tower_buttons.size():
@@ -139,7 +148,17 @@ func _select_tower(tower_definition: TowerDefinition) -> void:
 
 func _select_wall_mode() -> void:
 	_wall_mode = true
+	_zone_mode = false
 	wall_button.button_pressed = true
+	zone_button.button_pressed = false
+	for button in tower_buttons:
+		button.button_pressed = false
+
+func _select_zone_mode() -> void:
+	_wall_mode = false
+	_zone_mode = true
+	wall_button.button_pressed = false
+	zone_button.button_pressed = true
 	for button in tower_buttons:
 		button.button_pressed = false
 
@@ -150,13 +169,30 @@ func _refresh_affordability(_amount: float) -> void:
 		if i < towers.size():
 			tower_buttons[i].disabled = EconomyManager.layer_currency < towers[i].cost
 	wall_button.disabled = EconomyManager.layer_currency < WALL_COST
+	zone_button.disabled = EconomyManager.layer_currency < ZONE_COST
+	_refresh_advance_button()
+
+## Le bouton de progression sert soit à débloquer la couche suivante,
+## soit — sur la dernière couche configurée — à déclencher le prestige
+## galactique (docs/design.md, section 09).
+func _refresh_advance_button() -> void:
 	var next_layer: LayerDefinition = LayerManager.get_next_layer()
 	if next_layer:
+		advance_button.text = "Passer à %s (%d)" % [next_layer.display_name, int(next_layer.unlock_cost)]
 		advance_button.disabled = EconomyManager.layer_currency < next_layer.unlock_cost
+	else:
+		var points_preview: int = _prestige_points_preview()
+		advance_button.text = "Prestige galactique (+%d points)" % points_preview
+		advance_button.disabled = points_preview <= 0
+
+func _prestige_points_preview() -> int:
+	return int(floor(sqrt(EconomyManager.total_layer_currency_earned)))
 
 func _on_cell_clicked(cell: Vector2i) -> void:
 	if _wall_mode:
 		_try_place_wall(cell)
+	elif _zone_mode:
+		_try_place_zone(cell)
 	else:
 		_try_place_tower(cell)
 
@@ -166,6 +202,13 @@ func _try_place_wall(cell: Vector2i) -> void:
 	if not EconomyManager.spend_layer_currency(WALL_COST):
 		return
 	grid.block_cell(cell)
+
+func _try_place_zone(cell: Vector2i) -> void:
+	if grid.has_slow_zone(cell):
+		return
+	if not EconomyManager.spend_layer_currency(ZONE_COST):
+		return
+	grid.set_slow_zone(cell, ZONE_SLOW_MULTIPLIER)
 
 func _try_place_tower(cell: Vector2i) -> void:
 	if _selected_tower == null or _occupied_cells.has(cell) or grid.is_blocked(cell):
@@ -201,13 +244,22 @@ func _try_place_tower(cell: Vector2i) -> void:
 
 func _on_advance_pressed() -> void:
 	var next_layer: LayerDefinition = LayerManager.get_next_layer()
-	if next_layer == null:
-		return
-	if not EconomyManager.spend_layer_currency(next_layer.unlock_cost):
-		return
+	if next_layer != null:
+		if not EconomyManager.spend_layer_currency(next_layer.unlock_cost):
+			return
+		var bridge_currency: float = BRIDGE_K * sqrt(EconomyManager.total_layer_currency_earned)
+		LayerManager.advance_layer()
+		EconomyManager.begin_new_layer(bridge_currency)
+		_reset_battlefield()
+	else:
+		_prestige()
 
+func _prestige() -> void:
+	var points_earned: int = _prestige_points_preview()
+	if points_earned <= 0:
+		return
 	var bridge_currency: float = BRIDGE_K * sqrt(EconomyManager.total_layer_currency_earned)
-	LayerManager.advance_layer()
+	PrestigeManager.prestige(points_earned)
 	EconomyManager.begin_new_layer(bridge_currency)
 	_reset_battlefield()
 

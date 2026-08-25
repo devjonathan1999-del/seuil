@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="TowerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"distorsion_temporelle"
+display_name = "Distorsion temporelle"
+damage = 0.0
+fire_rate = 0.4
+range_cells = 2.8
+splash_radius_cells = 0.0
+slow_multiplier = 0.28
+slow_duration = 2.8
+buff_damage_multiplier = 1.0
+buff_duration = 0.0
+cost = 175.0
+color = Color(0.35, 0.25, 0.55, 1)
+ignores_line_of_sight = false
+can_target_aerial = true

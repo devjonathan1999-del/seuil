@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="LayerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/layer_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"galactique"
+display_name = "Galactique"
+defends = "Le système stellaire"
+base_rate = 36.0
+unlock_cost = 3500.0
+twist_description = "Ralentissement de zone : une case posée en Zone temporelle ralentit en continu quiconque s'y trouve, sol ou air, sans jamais bloquer le chemin comme un mur. Dernière couche : atteindre le prestige galactique relance le cycle depuis Tribu."
+has_terrain = true
+requires_line_of_sight = true
+has_temporal_zones = true

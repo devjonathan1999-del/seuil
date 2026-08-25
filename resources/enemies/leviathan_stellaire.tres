@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"leviathan_stellaire"
+display_name = "Léviathan stellaire"
+hp = 1800.0
+speed = 30.0
+reward = 400.0
+radius = 70.0
+color = Color(0.1, 0.08, 0.16, 1)
+is_aerial = true

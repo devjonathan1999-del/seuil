@@ -21,6 +21,7 @@ var has_terrain: bool = false
 
 var _astar: AStarGrid2D
 var _blocked: Dictionary = {}
+var _slow_zones: Dictionary = {} ## Vector2i -> multiplicateur de vitesse
 
 func _ready() -> void:
 	_rebuild_fixed_path()
@@ -143,6 +144,21 @@ func _cells_on_line(a: Vector2i, b: Vector2i) -> Array[Vector2i]:
 			y0 += sy
 	return cells
 
+## Zone de ralentissement persistante (twist Planète → Galactique) : contrairement
+## au pulse d'une tourelle Contrôle, elle ne dépend d'aucune cadence de tir et
+## agit en continu tant qu'un ennemi s'y trouve. N'affecte jamais le tracé du
+## chemin (contrairement aux murs) — seulement la vitesse.
+func set_slow_zone(cell: Vector2i, multiplier: float) -> void:
+	_slow_zones[cell] = multiplier
+	queue_redraw()
+
+func has_slow_zone(cell: Vector2i) -> bool:
+	return _slow_zones.has(cell)
+
+func get_zone_multiplier_at(world_pos: Vector2) -> float:
+	var cell: Vector2i = local_to_grid(to_local(world_pos))
+	return _slow_zones.get(cell, 1.0)
+
 func _rebuild_fixed_path() -> void:
 	path.clear()
 	for row in rows:
@@ -162,3 +178,7 @@ func _draw() -> void:
 			var rect := Rect2(col * cell_size, row * cell_size, cell_size, cell_size)
 			draw_rect(rect, fill_color, true)
 			draw_rect(rect, Color(0.05, 0.05, 0.05), false, 2.0)
+
+	for cell in _slow_zones:
+		var zone_rect := Rect2(cell.x * cell_size, cell.y * cell_size, cell_size, cell_size)
+		draw_rect(zone_rect, Color(0.35, 0.7, 0.9, 0.35), true)

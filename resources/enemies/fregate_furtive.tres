@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"fregate_furtive"
+display_name = "Frégate furtive"
+hp = 56.0
+speed = 230.0
+reward = 30.0
+radius = 22.0
+color = Color(0.25, 0.28, 0.4, 1)
+is_aerial = true
