@@ -30,5 +30,8 @@ SaveManager="*res://scripts/autoload/save_manager.gd"
 
 window/size/viewport_width=1080
 window/size/viewport_height=1920
+window/size/window_width_override=405
+window/size/window_height_override=720
 window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
 window/handheld/orientation=1
