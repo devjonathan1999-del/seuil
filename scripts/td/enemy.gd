@@ -9,8 +9,10 @@ var speed: float = 90.0
 var reward: float = 5.0
 
 var hp: float
+var speed_multiplier: float = 1.0
 var _path_points: Array[Vector2] = []
 var _target_index: int = 1
+var _slow_timer: Timer
 
 func setup(definition: EnemyDefinition, path_points: Array[Vector2]) -> void:
 	max_hp = definition.hp
@@ -28,7 +30,7 @@ func _process(delta: float) -> void:
 
 	var target_point: Vector2 = _path_points[_target_index]
 	var to_target: Vector2 = target_point - global_position
-	var step: float = speed * delta
+	var step: float = speed * speed_multiplier * delta
 
 	if to_target.length() <= step:
 		global_position = target_point
@@ -41,6 +43,16 @@ func _process(delta: float) -> void:
 		global_position += to_target.normalized() * step
 
 	queue_redraw()
+
+## Ralentit l'ennemi ; un nouveau pulse rafraîchit simplement la durée.
+func apply_slow(multiplier: float, duration: float) -> void:
+	speed_multiplier = multiplier
+	if _slow_timer == null:
+		_slow_timer = Timer.new()
+		_slow_timer.one_shot = true
+		_slow_timer.timeout.connect(func() -> void: speed_multiplier = 1.0)
+		add_child(_slow_timer)
+	_slow_timer.start(duration)
 
 func take_damage(amount: float) -> void:
 	hp -= amount

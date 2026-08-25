@@ -4,15 +4,15 @@
 
 [resource]
 script = ExtResource("1")
-id = &"chasseur"
-display_name = "Chasseur"
-damage = 3.0
-fire_rate = 1.2
-range_cells = 2.5
+id = &"piege_fosse"
+display_name = "Piège à fosse"
+damage = 0.0
+fire_rate = 0.5
+range_cells = 1.8
 splash_radius_cells = 0.0
-slow_multiplier = 1.0
-slow_duration = 0.0
+slow_multiplier = 0.5
+slow_duration = 1.5
 buff_damage_multiplier = 1.0
 buff_duration = 0.0
 cost = 0.0
-color = Color(0.75, 0.55, 0.2, 1)
+color = Color(0.35, 0.45, 0.6, 1)

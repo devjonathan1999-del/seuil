@@ -19,19 +19,35 @@ script = ExtResource("3")
 
 [node name="ChasseurButton" type="Button" parent="."]
 toggle_mode = true
-offset_left = 20.0
+offset_left = 15.0
 offset_top = 1460.0
-offset_right = 260.0
+offset_right = 240.0
 offset_bottom = 1520.0
 text = "Chasseur"
 
 [node name="FeuLanceButton" type="Button" parent="."]
 toggle_mode = true
-offset_left = 280.0
+offset_left = 250.0
 offset_top = 1460.0
-offset_right = 520.0
+offset_right = 475.0
 offset_bottom = 1520.0
 text = "Feu lancé"
+
+[node name="PiegeFosseButton" type="Button" parent="."]
+toggle_mode = true
+offset_left = 485.0
+offset_top = 1460.0
+offset_right = 710.0
+offset_bottom = 1520.0
+text = "Piège à fosse"
+
+[node name="ChamanButton" type="Button" parent="."]
+toggle_mode = true
+offset_left = 720.0
+offset_top = 1460.0
+offset_right = 945.0
+offset_bottom = 1520.0
+text = "Chaman"
 
 [node name="CoreLabel" type="Label" parent="."]
 offset_left = 20.0

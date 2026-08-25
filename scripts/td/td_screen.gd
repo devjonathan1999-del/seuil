@@ -5,6 +5,8 @@ extends Node2D
 
 const CHASSEUR_TOWER: TowerDefinition = preload("res://resources/towers/chasseur.tres")
 const FEU_LANCE_TOWER: TowerDefinition = preload("res://resources/towers/feu_lance.tres")
+const PIEGE_FOSSE_TOWER: TowerDefinition = preload("res://resources/towers/piege_fosse.tres")
+const CHAMAN_TOWER: TowerDefinition = preload("res://resources/towers/chaman.tres")
 const LOUPS_ENEMY: EnemyDefinition = preload("res://resources/enemies/loups.tres")
 const TOWER_SCENE: PackedScene = preload("res://scenes/td/tower.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
@@ -16,9 +18,12 @@ const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 @onready var core_label: Label = $CoreLabel
 @onready var chasseur_button: Button = $ChasseurButton
 @onready var feu_lance_button: Button = $FeuLanceButton
+@onready var piege_fosse_button: Button = $PiegeFosseButton
+@onready var chaman_button: Button = $ChamanButton
 
 var _occupied_cells: Dictionary = {}
 var _selected_tower: TowerDefinition = CHASSEUR_TOWER
+var _tower_buttons: Dictionary = {}
 var core_hp: int = 10
 
 func _ready() -> void:
@@ -26,16 +31,22 @@ func _ready() -> void:
 	wave_spawner.enemy_spawned.connect(_on_enemy_spawned)
 	wave_spawner.setup(grid, ENEMY_SCENE, LOUPS_ENEMY, enemies_root)
 
-	chasseur_button.pressed.connect(func() -> void: _select_tower(CHASSEUR_TOWER))
-	feu_lance_button.pressed.connect(func() -> void: _select_tower(FEU_LANCE_TOWER))
+	_tower_buttons = {
+		CHASSEUR_TOWER: chasseur_button,
+		FEU_LANCE_TOWER: feu_lance_button,
+		PIEGE_FOSSE_TOWER: piege_fosse_button,
+		CHAMAN_TOWER: chaman_button,
+	}
+	for tower_definition: TowerDefinition in _tower_buttons:
+		_tower_buttons[tower_definition].pressed.connect(_select_tower.bind(tower_definition))
 	_select_tower(CHASSEUR_TOWER)
 
 	_refresh_core_label()
 
 func _select_tower(tower_definition: TowerDefinition) -> void:
 	_selected_tower = tower_definition
-	chasseur_button.button_pressed = tower_definition == CHASSEUR_TOWER
-	feu_lance_button.button_pressed = tower_definition == FEU_LANCE_TOWER
+	for candidate: TowerDefinition in _tower_buttons:
+		_tower_buttons[candidate].button_pressed = candidate == tower_definition
 
 func _on_cell_clicked(cell: Vector2i) -> void:
 	if grid.is_on_path(cell) or _occupied_cells.has(cell):
@@ -47,6 +58,7 @@ func _on_cell_clicked(cell: Vector2i) -> void:
 	tower.setup(
 		_selected_tower,
 		enemies_root,
+		towers_root,
 		_selected_tower.range_cells * grid.cell_size,
 		_selected_tower.splash_radius_cells * grid.cell_size
 	)
