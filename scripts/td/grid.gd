@@ -2,8 +2,12 @@ class_name TDGrid
 extends Node2D
 
 ## La grille de jeu et le chemin suivi par les ennemis.
-## Un chemin vertical unique pour cette première tranche jouable ;
-## le terrain (obstacles, couverture) viendra avec le twist Tribu → Village.
+## Sans terrain (Tribu) : une voie verticale fixe.
+## Avec terrain (Village, docs/design.md section 03) : le chemin le plus
+## court est recalculé par A* à chaque construction, et tout ce qu'on pose
+## — tourelle ou mur — bloque sa case pour le prochain calcul. Les "portes"
+## ne sont pas un objet à part : ce sont les ouvertures qu'on laisse dans
+## ses murs pour que le chemin passe encore.
 
 signal cell_clicked(cell: Vector2i)
 
@@ -13,10 +17,13 @@ signal cell_clicked(cell: Vector2i)
 @export var path_column: int = 2
 
 var path: Array[Vector2i] = []
+var has_terrain: bool = false
+
+var _astar: AStarGrid2D
+var _blocked: Dictionary = {}
 
 func _ready() -> void:
-	for row in rows:
-		path.append(Vector2i(path_column, row))
+	_rebuild_fixed_path()
 	queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -45,11 +52,71 @@ func get_path_world_points() -> Array[Vector2]:
 		points.append(to_global(grid_to_local(cell)))
 	return points
 
+## Active ou désactive le terrain dynamique pour la couche affichée.
+func set_terrain_enabled(enabled: bool) -> void:
+	has_terrain = enabled
+	_blocked.clear()
+	if has_terrain:
+		_astar = AStarGrid2D.new()
+		_astar.region = Rect2i(0, 0, columns, rows)
+		_astar.cell_size = Vector2(cell_size, cell_size)
+		_astar.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+		_astar.update()
+		_recompute_path()
+	else:
+		_rebuild_fixed_path()
+	queue_redraw()
+
+func get_start_cell() -> Vector2i:
+	return Vector2i(path_column, 0)
+
+func get_end_cell() -> Vector2i:
+	return Vector2i(path_column, rows - 1)
+
+func is_blocked(cell: Vector2i) -> bool:
+	return _blocked.has(cell)
+
+## Vrai si bloquer cette case laisse encore un chemin de bout en bout.
+## Utilisé pour les tourelles ET les murs en terrain dynamique : tout ce
+## qu'on construit façonne le tracé, personne ne peut le sceller.
+func can_block(cell: Vector2i) -> bool:
+	if not has_terrain:
+		return false
+	if is_blocked(cell) or cell == get_start_cell() or cell == get_end_cell():
+		return false
+	_astar.set_point_solid(cell, true)
+	var test_path: Array[Vector2i] = _astar.get_id_path(get_start_cell(), get_end_cell())
+	_astar.set_point_solid(cell, false)
+	return test_path.size() > 0
+
+func block_cell(cell: Vector2i) -> bool:
+	if not can_block(cell):
+		return false
+	_blocked[cell] = true
+	_astar.set_point_solid(cell, true)
+	_recompute_path()
+	queue_redraw()
+	return true
+
+func _recompute_path() -> void:
+	path = _astar.get_id_path(get_start_cell(), get_end_cell())
+
+func _rebuild_fixed_path() -> void:
+	path.clear()
+	for row in rows:
+		path.append(Vector2i(path_column, row))
+
 func _draw() -> void:
 	for row in rows:
 		for col in columns:
 			var cell := Vector2i(col, row)
+			var fill_color: Color
+			if has_terrain and is_blocked(cell):
+				fill_color = Color(0.3, 0.16, 0.1)
+			elif is_on_path(cell):
+				fill_color = Color(0.32, 0.24, 0.12)
+			else:
+				fill_color = Color(0.16, 0.18, 0.14)
 			var rect := Rect2(col * cell_size, row * cell_size, cell_size, cell_size)
-			var fill_color := Color(0.32, 0.24, 0.12) if is_on_path(cell) else Color(0.16, 0.18, 0.14)
 			draw_rect(rect, fill_color, true)
 			draw_rect(rect, Color(0.05, 0.05, 0.05), false, 2.0)

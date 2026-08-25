@@ -9,4 +9,5 @@ display_name = "Village"
 defends = "Le mur / silo"
 base_rate = 2.5
 unlock_cost = 150.0
-twist_description = "Terrain : murs et portes comme premier levier spatial (à venir)."
+twist_description = "Terrain : murs comme premier levier spatial ; les portes sont les ouvertures qu'on laisse dans ses murs."
+has_terrain = true

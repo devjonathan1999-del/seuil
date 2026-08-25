@@ -50,8 +50,16 @@ offset_right = 945.0
 offset_bottom = 1520.0
 text = "Tourelle 4"
 
-[node name="TechButton" type="Button" parent="."]
+[node name="WallButton" type="Button" parent="."]
+toggle_mode = true
 offset_left = 15.0
+offset_top = 1540.0
+offset_right = 475.0
+offset_bottom = 1600.0
+text = "Mur"
+
+[node name="TechButton" type="Button" parent="."]
+offset_left = 485.0
 offset_top = 1540.0
 offset_right = 945.0
 offset_bottom = 1600.0

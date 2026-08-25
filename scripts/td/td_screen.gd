@@ -6,10 +6,13 @@ extends Node2D
 ## Les choix de l'arbre de tech (TechTreeManager) sont appliqués à chaque
 ## pose, pas rétroactivement. Passer à la couche suivante réinitialise le
 ## champ de bataille avec le contenu de la nouvelle couche.
+##
+## Sur une couche à terrain (Village, docs/design.md section 03), le mode
+## Mur remplace la pose de tourelle : tourelles et murs bloquent tous deux
+## leur case pour le chemin recalculé par la grille (TDGrid.can_block).
 
-## Constante k du pont inter-couches (docs/design.md, section 04) :
-## Départ(N+1) = k × √Produit(N).
-const BRIDGE_K: float = 2.0
+const BRIDGE_K: float = 2.0 ## Départ(N+1) = k × √Produit(N), section 04
+const WALL_COST: float = 8.0
 
 const TOWER_SCENE: PackedScene = preload("res://scenes/td/tower.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
@@ -21,18 +24,21 @@ const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 @onready var core_label: Label = $CoreLabel
 @onready var wave_label: Label = $WaveLabel
 @onready var tower_buttons: Array[Button] = [$TowerButton1, $TowerButton2, $TowerButton3, $TowerButton4]
+@onready var wall_button: Button = $WallButton
 @onready var tech_button: Button = $TechButton
 @onready var tech_tree_panel: Control = $TechTreePanel
 @onready var advance_button: Button = $AdvanceButton
 
 var _occupied_cells: Dictionary = {}
 var _selected_tower: TowerDefinition
+var _wall_mode: bool = false
 var core_hp: int = 10
 
 func _ready() -> void:
 	grid.cell_clicked.connect(_on_cell_clicked)
 	tech_button.pressed.connect(func() -> void: tech_tree_panel.visible = not tech_tree_panel.visible)
 	advance_button.pressed.connect(_on_advance_pressed)
+	wall_button.pressed.connect(_select_wall_mode)
 	EconomyManager.layer_currency_changed.connect(_refresh_affordability)
 
 	for i in tower_buttons.size():
@@ -53,6 +59,10 @@ func _setup_layer_content() -> void:
 	var layer: LayerDefinition = LayerManager.get_current_layer()
 	var towers: Array[TowerDefinition] = LayerContent.get_towers(layer.id)
 	var enemies: Array[EnemyDefinition] = LayerContent.get_enemies(layer.id)
+
+	grid.set_terrain_enabled(layer.has_terrain)
+	wall_button.visible = layer.has_terrain
+	wall_button.text = "Mur (%d)" % int(WALL_COST)
 
 	for i in tower_buttons.size():
 		var button: Button = tower_buttons[i]
@@ -83,11 +93,19 @@ func _setup_layer_content() -> void:
 
 func _select_tower(tower_definition: TowerDefinition) -> void:
 	_selected_tower = tower_definition
+	_wall_mode = false
+	wall_button.button_pressed = false
 	var layer: LayerDefinition = LayerManager.get_current_layer()
 	var towers: Array[TowerDefinition] = LayerContent.get_towers(layer.id)
 	for i in tower_buttons.size():
 		if i < towers.size():
 			tower_buttons[i].button_pressed = towers[i] == tower_definition
+
+func _select_wall_mode() -> void:
+	_wall_mode = true
+	wall_button.button_pressed = true
+	for button in tower_buttons:
+		button.button_pressed = false
 
 func _refresh_affordability(_amount: float) -> void:
 	var layer: LayerDefinition = LayerManager.get_current_layer()
@@ -95,15 +113,40 @@ func _refresh_affordability(_amount: float) -> void:
 	for i in tower_buttons.size():
 		if i < towers.size():
 			tower_buttons[i].disabled = EconomyManager.layer_currency < towers[i].cost
+	wall_button.disabled = EconomyManager.layer_currency < WALL_COST
 	var next_layer: LayerDefinition = LayerManager.get_next_layer()
 	if next_layer:
 		advance_button.disabled = EconomyManager.layer_currency < next_layer.unlock_cost
 
 func _on_cell_clicked(cell: Vector2i) -> void:
-	if _selected_tower == null or grid.is_on_path(cell) or _occupied_cells.has(cell):
+	if _wall_mode:
+		_try_place_wall(cell)
+	else:
+		_try_place_tower(cell)
+
+func _try_place_wall(cell: Vector2i) -> void:
+	if _occupied_cells.has(cell) or not grid.can_block(cell):
 		return
+	if not EconomyManager.spend_layer_currency(WALL_COST):
+		return
+	grid.block_cell(cell)
+
+func _try_place_tower(cell: Vector2i) -> void:
+	if _selected_tower == null or _occupied_cells.has(cell) or grid.is_blocked(cell):
+		return
+
+	var layer: LayerDefinition = LayerManager.get_current_layer()
+	if layer.has_terrain:
+		if not grid.can_block(cell):
+			return
+	elif grid.is_on_path(cell):
+		return
+
 	if not EconomyManager.spend_layer_currency(_selected_tower.cost):
 		return
+
+	if layer.has_terrain:
+		grid.block_cell(cell)
 
 	var effective_definition: TowerDefinition = TechTreeManager.apply_to_definition(_selected_tower)
 	var tower: TDTower = TOWER_SCENE.instantiate()

@@ -10,3 +10,4 @@ extends Resource
 @export var base_rate: float = 1.0
 @export var unlock_cost: float = 0.0
 @export var twist_description: String = ""
+@export var has_terrain: bool = false ## murs/portes : voir section 03, twist Tribu → Village
