@@ -59,6 +59,22 @@ const TIERS: Dictionary = {
 		{"a": {"buff_damage_multiplier": 1.15}, "b": {"buff_duration": 1.5}},
 		{"a": {"range_cells": 1.25}, "b": {"fire_rate": 1.25}},
 	],
+	&"mitrailleuse": [
+		{"a": {"damage": 1.3}, "b": {"fire_rate": 1.3}},
+		{"a": {"range_cells": 1.2}, "b": {"damage": 1.2}},
+	],
+	&"artillerie_gaz": [
+		{"a": {"damage": 1.3}, "b": {"splash_radius_cells": 1.25}},
+		{"a": {"fire_rate": 1.2}, "b": {"range_cells": 1.2}},
+	],
+	&"mines_emp": [
+		{"a": {"slow_multiplier": 0.7}, "b": {"slow_duration": 1.5}},
+		{"a": {"range_cells": 1.25}, "b": {"fire_rate": 1.25}},
+	],
+	&"ingenieur": [
+		{"a": {"buff_damage_multiplier": 1.15}, "b": {"buff_duration": 1.5}},
+		{"a": {"range_cells": 1.25}, "b": {"fire_rate": 1.25}},
+	],
 }
 
 var _unlocked: Dictionary = {}

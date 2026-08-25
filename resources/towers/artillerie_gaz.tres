@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TowerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tower_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"artillerie_gaz"
+display_name = "Artillerie à gaz"
+damage = 9.0
+fire_rate = 0.8
+range_cells = 2.8
+splash_radius_cells = 1.7
+slow_multiplier = 1.0
+slow_duration = 0.0
+buff_damage_multiplier = 1.0
+buff_duration = 0.0
+cost = 65.0
+color = Color(0.45, 0.55, 0.25, 1)
+ignores_line_of_sight = true

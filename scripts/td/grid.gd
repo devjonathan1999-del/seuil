@@ -101,6 +101,40 @@ func block_cell(cell: Vector2i) -> bool:
 func _recompute_path() -> void:
 	path = _astar.get_id_path(get_start_cell(), get_end_cell())
 
+## Vrai si aucune case bloquée ne coupe la ligne entre les deux cases.
+## Twist Royaume → Nation : le tir indirect ignore ce résultat.
+func has_line_of_sight(from_cell: Vector2i, to_cell: Vector2i) -> bool:
+	if not has_terrain:
+		return true
+	for cell in _cells_on_line(from_cell, to_cell):
+		if cell != from_cell and cell != to_cell and is_blocked(cell):
+			return false
+	return true
+
+func _cells_on_line(a: Vector2i, b: Vector2i) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	var x0 := a.x
+	var y0 := a.y
+	var x1 := b.x
+	var y1 := b.y
+	var dx := absi(x1 - x0)
+	var sx := 1 if x0 < x1 else -1
+	var dy := -absi(y1 - y0)
+	var sy := 1 if y0 < y1 else -1
+	var err := dx + dy
+	while true:
+		cells.append(Vector2i(x0, y0))
+		if x0 == x1 and y0 == y1:
+			break
+		var e2 := 2 * err
+		if e2 >= dy:
+			err += dy
+			x0 += sx
+		if e2 <= dx:
+			err += dx
+			y0 += sy
+	return cells
+
 func _rebuild_fixed_path() -> void:
 	path.clear()
 	for row in rows:

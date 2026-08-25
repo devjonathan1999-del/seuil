@@ -5,6 +5,9 @@ extends Node2D
 ## définition : buff > slow > splash > mono-cible. Un seul est actif par
 ## archétype (voir docs/design.md, section 03), donc l'ordre ne crée pas
 ## d'ambiguïté en pratique.
+##
+## Sur une couche à tir indirect (Nation), une tourelle sans
+## ignores_line_of_sight ignore toute cible qu'un mur lui masque.
 
 var definition: TowerDefinition
 var damage_multiplier: float = 1.0
@@ -13,15 +16,30 @@ var _range_pixels: float = 0.0
 var _splash_radius_pixels: float = 0.0
 var _enemies_root: Node2D
 var _towers_root: Node2D
+var _grid: TDGrid
+var _requires_los: bool = false
+var _own_cell: Vector2i
 var _fire_timer: Timer
 var _buff_timer: Timer
 
-func setup(tower_definition: TowerDefinition, enemies_root: Node2D, towers_root: Node2D, range_pixels: float, splash_radius_pixels: float = 0.0) -> void:
+func setup(
+	tower_definition: TowerDefinition,
+	enemies_root: Node2D,
+	towers_root: Node2D,
+	range_pixels: float,
+	splash_radius_pixels: float = 0.0,
+	grid: TDGrid = null,
+	requires_los: bool = false
+) -> void:
 	definition = tower_definition
 	_enemies_root = enemies_root
 	_towers_root = towers_root
 	_range_pixels = range_pixels
 	_splash_radius_pixels = splash_radius_pixels
+	_grid = grid
+	_requires_los = requires_los
+	if _grid:
+		_own_cell = _grid.local_to_grid(_grid.to_local(global_position))
 
 	_fire_timer = Timer.new()
 	_fire_timer.wait_time = 1.0 / definition.fire_rate
@@ -78,10 +96,16 @@ func _find_target() -> TDEnemy:
 	for child in _enemies_root.get_children():
 		if child is TDEnemy:
 			var dist: float = global_position.distance_to(child.global_position)
-			if dist <= _range_pixels and dist < closest_dist:
+			if dist <= _range_pixels and dist < closest_dist and _can_see(child):
 				closest = child
 				closest_dist = dist
 	return closest
+
+func _can_see(target: TDEnemy) -> bool:
+	if not _requires_los or definition.ignores_line_of_sight or _grid == null:
+		return true
+	var target_cell: Vector2i = _grid.local_to_grid(_grid.to_local(target.global_position))
+	return _grid.has_line_of_sight(_own_cell, target_cell)
 
 func _draw() -> void:
 	if definition == null:

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"moto_jet"
+display_name = "Moto-jet"
+hp = 24.0
+speed = 210.0
+reward = 13.0
+radius = 19.0
+color = Color(0.65, 0.4, 0.15, 1)

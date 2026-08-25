@@ -193,7 +193,9 @@ func _try_place_tower(cell: Vector2i) -> void:
 		enemies_root,
 		towers_root,
 		effective_definition.range_cells * grid.cell_size,
-		effective_definition.splash_radius_cells * grid.cell_size
+		effective_definition.splash_radius_cells * grid.cell_size,
+		grid,
+		layer.requires_line_of_sight
 	)
 	_occupied_cells[cell] = tower
 

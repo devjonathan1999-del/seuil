@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"char_blinde"
+display_name = "Char blindé"
+hp = 135.0
+speed = 42.0
+reward = 38.0
+radius = 40.0
+color = Color(0.3, 0.34, 0.28, 1)

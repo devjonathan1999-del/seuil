@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="LayerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/layer_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"nation"
+display_name = "Nation"
+defends = "La capitale industrielle"
+base_rate = 11.0
+unlock_cost = 900.0
+twist_description = "Tir indirect : l'Artillerie à gaz ignore les murs qui bloquent les autres tourelles. Terrain et boss restent actifs."
+has_terrain = true
+requires_line_of_sight = true

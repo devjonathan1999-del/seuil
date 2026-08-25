@@ -25,6 +25,12 @@ const TOWER_POOLS: Dictionary = {
 		"res://resources/towers/herse.tres",
 		"res://resources/towers/heraut.tres",
 	],
+	&"nation": [
+		"res://resources/towers/mitrailleuse.tres",
+		"res://resources/towers/artillerie_gaz.tres",
+		"res://resources/towers/mines_emp.tres",
+		"res://resources/towers/ingenieur.tres",
+	],
 }
 
 const ENEMY_POOLS: Dictionary = {
@@ -45,6 +51,12 @@ const ENEMY_POOLS: Dictionary = {
 		"res://resources/enemies/cavalier_leger.tres",
 		"res://resources/enemies/trebuchet.tres",
 	],
+	&"nation": [
+		"res://resources/enemies/drones.tres",
+		"res://resources/enemies/char_blinde.tres",
+		"res://resources/enemies/moto_jet.tres",
+		"res://resources/enemies/obusier.tres",
+	],
 }
 
 ## Vagues nommées / boss (twist Village → Royaume). "interval" = une vague
@@ -53,6 +65,10 @@ const BOSS_POOLS: Dictionary = {
 	&"royaume": {
 		"interval": 5,
 		"enemy": "res://resources/enemies/chevalier_noir.tres",
+	},
+	&"nation": {
+		"interval": 5,
+		"enemy": "res://resources/enemies/forteresse_mobile.tres",
 	},
 }
 
