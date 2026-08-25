@@ -8,6 +8,7 @@ signal layer_changed(layer: LayerDefinition)
 const LAYER_PATHS: Array[String] = [
 	"res://resources/layers/tribu.tres",
 	"res://resources/layers/village.tres",
+	"res://resources/layers/royaume.tres",
 ]
 
 var layers: Array[LayerDefinition] = []

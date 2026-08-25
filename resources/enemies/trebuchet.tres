@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"trebuchet"
+display_name = "Trébuchet"
+hp = 22.0
+speed = 60.0
+reward = 13.0
+radius = 26.0
+color = Color(0.5, 0.2, 0.15, 1)

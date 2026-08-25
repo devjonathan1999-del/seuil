@@ -1,9 +1,10 @@
 class_name LayerContent
 extends RefCounted
 
-## Associe chaque couche à ses 4 tourelles et ses ennemis (docs/design.md,
-## section 03). Un lookup en code plutôt que des tableaux de sous-ressources
-## dans les .tres, plus simple à maintenir à la main sans l'éditeur.
+## Associe chaque couche à ses 4 tourelles, ses ennemis et son boss éventuel
+## (docs/design.md, section 03). Un lookup en code plutôt que des tableaux
+## de sous-ressources dans les .tres, plus simple à maintenir à la main
+## sans l'éditeur.
 
 const TOWER_POOLS: Dictionary = {
 	&"tribu": [
@@ -17,6 +18,12 @@ const TOWER_POOLS: Dictionary = {
 		"res://resources/towers/huile_bouillante.tres",
 		"res://resources/towers/filet.tres",
 		"res://resources/towers/forgeron.tres",
+	],
+	&"royaume": [
+		"res://resources/towers/arbaletrier.tres",
+		"res://resources/towers/bombarde.tres",
+		"res://resources/towers/herse.tres",
+		"res://resources/towers/heraut.tres",
 	],
 }
 
@@ -32,6 +39,21 @@ const ENEMY_POOLS: Dictionary = {
 		"res://resources/enemies/eclaireur_monte.tres",
 		"res://resources/enemies/archer_ennemi.tres",
 	],
+	&"royaume": [
+		"res://resources/enemies/fantassins.tres",
+		"res://resources/enemies/chevalier_lourd.tres",
+		"res://resources/enemies/cavalier_leger.tres",
+		"res://resources/enemies/trebuchet.tres",
+	],
+}
+
+## Vagues nommées / boss (twist Village → Royaume). "interval" = une vague
+## sur N est une vague de boss (un seul ennemi, pas le tirage habituel).
+const BOSS_POOLS: Dictionary = {
+	&"royaume": {
+		"interval": 5,
+		"enemy": "res://resources/enemies/chevalier_noir.tres",
+	},
 }
 
 static func get_towers(layer_id: StringName) -> Array[TowerDefinition]:
@@ -45,3 +67,10 @@ static func get_enemies(layer_id: StringName) -> Array[EnemyDefinition]:
 	for path in ENEMY_POOLS.get(layer_id, []):
 		result.append(load(path))
 	return result
+
+static func get_boss_interval(layer_id: StringName) -> int:
+	return BOSS_POOLS.get(layer_id, {}).get("interval", 0)
+
+static func get_boss_enemy(layer_id: StringName) -> EnemyDefinition:
+	var enemy_path: String = BOSS_POOLS.get(layer_id, {}).get("enemy", "")
+	return load(enemy_path) if enemy_path != "" else null

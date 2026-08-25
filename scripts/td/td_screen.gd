@@ -83,7 +83,14 @@ func _setup_layer_content() -> void:
 	wave_spawner = new_spawner
 	wave_spawner.enemy_spawned.connect(_on_enemy_spawned)
 	wave_spawner.wave_started.connect(_on_wave_started)
-	wave_spawner.setup(grid, ENEMY_SCENE, enemies, enemies_root)
+	wave_spawner.setup(
+		grid,
+		ENEMY_SCENE,
+		enemies,
+		enemies_root,
+		LayerContent.get_boss_enemy(layer.id),
+		LayerContent.get_boss_interval(layer.id)
+	)
 
 	var next_layer: LayerDefinition = LayerManager.get_next_layer()
 	if next_layer == null:
@@ -212,8 +219,11 @@ func _reset_battlefield() -> void:
 	_refresh_core_label()
 	_setup_layer_content()
 
-func _on_wave_started(wave_number: int) -> void:
-	wave_label.text = "Vague : %d" % (wave_number + 1)
+func _on_wave_started(wave_number: int, boss_name: String) -> void:
+	if boss_name != "":
+		wave_label.text = "Vague %d — Boss : %s !" % [wave_number + 1, boss_name]
+	else:
+		wave_label.text = "Vague : %d" % (wave_number + 1)
 
 func _on_enemy_spawned(enemy: TDEnemy) -> void:
 	enemy.died.connect(_on_enemy_killed)

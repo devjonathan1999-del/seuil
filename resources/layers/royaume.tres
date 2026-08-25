@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="LayerDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/layer_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"royaume"
+display_name = "Royaume"
+defends = "Le château"
+base_rate = 5.5
+unlock_cost = 400.0
+twist_description = "Vagues nommées et boss (Chevalier Noir tous les 5 vagues). Le terrain de Village reste actif."
+has_terrain = true

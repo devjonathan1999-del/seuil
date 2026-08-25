@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/enemy_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"chevalier_lourd"
+display_name = "Chevalier lourd"
+hp = 90.0
+speed = 45.0
+reward = 26.0
+radius = 38.0
+color = Color(0.35, 0.35, 0.4, 1)
