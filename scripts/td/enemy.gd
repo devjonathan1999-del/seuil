@@ -4,20 +4,22 @@ extends Node2D
 signal died(enemy: TDEnemy)
 signal reached_end(enemy: TDEnemy)
 
+var definition: EnemyDefinition
 var max_hp: float = 10.0
 var speed: float = 90.0
 var reward: float = 5.0
+var speed_multiplier: float = 1.0
 
 var hp: float
-var speed_multiplier: float = 1.0
 var _path_points: Array[Vector2] = []
 var _target_index: int = 1
 var _slow_timer: Timer
 
-func setup(definition: EnemyDefinition, path_points: Array[Vector2]) -> void:
-	max_hp = definition.hp
-	speed = definition.speed
-	reward = definition.reward
+func setup(enemy_definition: EnemyDefinition, path_points: Array[Vector2]) -> void:
+	definition = enemy_definition
+	max_hp = enemy_definition.hp
+	speed = enemy_definition.speed
+	reward = enemy_definition.reward
 	hp = max_hp
 	_path_points = path_points
 	if _path_points.size() > 0:
@@ -63,7 +65,12 @@ func take_damage(amount: float) -> void:
 		queue_redraw()
 
 func _draw() -> void:
-	draw_circle(Vector2.ZERO, 24.0, Color(0.7, 0.2, 0.2))
+	var radius: float = definition.radius if definition else 24.0
+	var color: Color = definition.color if definition else Color(0.7, 0.2, 0.2)
+	draw_circle(Vector2.ZERO, radius, color)
+
 	var ratio: float = clamp(hp / max_hp, 0.0, 1.0)
-	draw_rect(Rect2(-24, -38, 48, 6), Color(0.15, 0.15, 0.15))
-	draw_rect(Rect2(-24, -38, 48.0 * ratio, 6), Color(0.2, 0.8, 0.3))
+	var bar_width: float = radius * 2.0
+	var bar_y: float = -radius - 14.0
+	draw_rect(Rect2(-radius, bar_y, bar_width, 6), Color(0.15, 0.15, 0.15))
+	draw_rect(Rect2(-radius, bar_y, bar_width * ratio, 6), Color(0.2, 0.8, 0.3))

@@ -12,14 +12,14 @@ signal enemy_spawned(enemy: TDEnemy)
 
 var _grid: TDGrid
 var _enemy_scene: PackedScene
-var _enemy_definition: EnemyDefinition
+var _enemy_pool: Array[EnemyDefinition] = []
 var _enemies_root: Node2D
 var _active: bool = true
 
-func setup(grid: TDGrid, enemy_scene: PackedScene, enemy_definition: EnemyDefinition, enemies_root: Node2D) -> void:
+func setup(grid: TDGrid, enemy_scene: PackedScene, enemy_pool: Array[EnemyDefinition], enemies_root: Node2D) -> void:
 	_grid = grid
 	_enemy_scene = enemy_scene
-	_enemy_definition = enemy_definition
+	_enemy_pool = enemy_pool
 	_enemies_root = enemies_root
 	_run_waves()
 
@@ -38,7 +38,8 @@ func _run_waves() -> void:
 		await get_tree().create_timer(time_between_waves).timeout
 
 func _spawn_enemy() -> void:
+	var enemy_definition: EnemyDefinition = _enemy_pool[randi() % _enemy_pool.size()]
 	var enemy: TDEnemy = _enemy_scene.instantiate()
 	_enemies_root.add_child(enemy)
-	enemy.setup(_enemy_definition, _grid.get_path_world_points())
+	enemy.setup(enemy_definition, _grid.get_path_world_points())
 	enemy_spawned.emit(enemy)

@@ -9,3 +9,5 @@ extends Resource
 @export var hp: float = 10.0
 @export var speed: float = 90.0 ## pixels par seconde
 @export var reward: float = 5.0
+@export var radius: float = 24.0
+@export var color: Color = Color(0.7, 0.2, 0.2)

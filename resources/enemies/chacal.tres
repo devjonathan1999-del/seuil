@@ -4,10 +4,10 @@
 
 [resource]
 script = ExtResource("1")
-id = &"loups"
-display_name = "Loups"
-hp = 12.0
-speed = 90.0
-reward = 5.0
-radius = 24.0
-color = Color(0.55, 0.2, 0.2, 1)
+id = &"chacal"
+display_name = "Chacal"
+hp = 6.0
+speed = 170.0
+reward = 4.0
+radius = 16.0
+color = Color(0.75, 0.65, 0.35, 1)

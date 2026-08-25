@@ -8,6 +8,9 @@ const FEU_LANCE_TOWER: TowerDefinition = preload("res://resources/towers/feu_lan
 const PIEGE_FOSSE_TOWER: TowerDefinition = preload("res://resources/towers/piege_fosse.tres")
 const CHAMAN_TOWER: TowerDefinition = preload("res://resources/towers/chaman.tres")
 const LOUPS_ENEMY: EnemyDefinition = preload("res://resources/enemies/loups.tres")
+const OURS_ENEMY: EnemyDefinition = preload("res://resources/enemies/ours.tres")
+const CHACAL_ENEMY: EnemyDefinition = preload("res://resources/enemies/chacal.tres")
+const ENEMY_POOL: Array[EnemyDefinition] = [LOUPS_ENEMY, OURS_ENEMY, CHACAL_ENEMY]
 const TOWER_SCENE: PackedScene = preload("res://scenes/td/tower.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 
@@ -29,7 +32,7 @@ var core_hp: int = 10
 func _ready() -> void:
 	grid.cell_clicked.connect(_on_cell_clicked)
 	wave_spawner.enemy_spawned.connect(_on_enemy_spawned)
-	wave_spawner.setup(grid, ENEMY_SCENE, LOUPS_ENEMY, enemies_root)
+	wave_spawner.setup(grid, ENEMY_SCENE, ENEMY_POOL, enemies_root)
 
 	_tower_buttons = {
 		CHASSEUR_TOWER: chasseur_button,
