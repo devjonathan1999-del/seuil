@@ -15,11 +15,13 @@ var _path_points: Array[Vector2] = []
 var _target_index: int = 1
 var _slow_timer: Timer
 
-func setup(enemy_definition: EnemyDefinition, path_points: Array[Vector2]) -> void:
+## stat_scale vient du scaling par vague (docs/design.md, section 05) :
+## HP et récompense grossissent avec la vague, la vitesse ne bouge pas.
+func setup(enemy_definition: EnemyDefinition, path_points: Array[Vector2], stat_scale: float = 1.0) -> void:
 	definition = enemy_definition
-	max_hp = enemy_definition.hp
+	max_hp = enemy_definition.hp * stat_scale
 	speed = enemy_definition.speed
-	reward = enemy_definition.reward
+	reward = enemy_definition.reward * stat_scale
 	hp = max_hp
 	_path_points = path_points
 	if _path_points.size() > 0:

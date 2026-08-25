@@ -19,6 +19,7 @@ const ENEMY_SCENE: PackedScene = preload("res://scenes/td/enemy.tscn")
 @onready var enemies_root: Node2D = $Enemies
 @onready var wave_spawner: TDWaveSpawner = $WaveSpawner
 @onready var core_label: Label = $CoreLabel
+@onready var wave_label: Label = $WaveLabel
 @onready var chasseur_button: Button = $ChasseurButton
 @onready var feu_lance_button: Button = $FeuLanceButton
 @onready var piege_fosse_button: Button = $PiegeFosseButton
@@ -32,6 +33,7 @@ var core_hp: int = 10
 func _ready() -> void:
 	grid.cell_clicked.connect(_on_cell_clicked)
 	wave_spawner.enemy_spawned.connect(_on_enemy_spawned)
+	wave_spawner.wave_started.connect(_on_wave_started)
 	wave_spawner.setup(grid, ENEMY_SCENE, ENEMY_POOL, enemies_root)
 
 	_tower_buttons = {
@@ -66,6 +68,9 @@ func _on_cell_clicked(cell: Vector2i) -> void:
 		_selected_tower.splash_radius_cells * grid.cell_size
 	)
 	_occupied_cells[cell] = tower
+
+func _on_wave_started(wave_number: int) -> void:
+	wave_label.text = "Vague : %d" % (wave_number + 1)
 
 func _on_enemy_spawned(enemy: TDEnemy) -> void:
 	enemy.died.connect(_on_enemy_killed)
